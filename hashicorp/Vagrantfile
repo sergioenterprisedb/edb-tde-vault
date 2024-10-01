@@ -1,0 +1,42 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+require 'yaml'
+
+params = YAML.load_file './config/vagrant.yaml'
+
+var_box        = "generic/rocky9"
+
+# VAULT
+vault_vm_name   = params['vault']['vm_name']
+vault_mem_size  = params['vault']['mem_size']
+vault_cpus      = params['vault']['cpus']
+vault_public_ip = params['vault']['public_ip']
+vault_port      = params['vault']['vault_port']
+
+Vagrant.configure("2") do |config|
+  config.vm.provision :hosts, :sync_hosts => true
+  config.vm.define "vault" do |vault|
+    vault.vm.box = var_box
+    vault.vm.hostname= vault_vm_name
+    vault.vm.network "forwarded_port", guest: 8200, host: 8200
+    vault.vm.network "private_network", ip: vault_public_ip, name: "HostOnly", virtualbox__intnet: true
+    vault.vm.provider "virtualbox" do |vmvault|
+      vmvault.memory = vault_mem_size
+      vmvault.cpus = vault_cpus
+      vmvault.name = vault_vm_name
+    end
+    vault.vm.synced_folder ".", "/vagrant"
+    vault.vm.synced_folder "./scripts", "/vagrant_scripts"
+    vault.vm.synced_folder "./config", "/vagrant_config"
+    vault.vm.provision "shell", inline: <<-SHELL
+      sudo sh /vagrant_scripts/firewall.sh
+      sudo sh /vagrant_scripts/00_vault_install.sh
+      sudo sh /vagrant_scripts/01_vault_server.sh
+      sudo sh /vagrant_scripts/02_vault_login.sh
+      sudo sh /vagrant_scripts/03_vault_enable_transit.sh
+      sudo sh /vagrant_scripts/04_vault_write_key.sh
+      sudo sh /vagrant_scripts/05_banner.sh
+      SHELL
+  end
+
+end
