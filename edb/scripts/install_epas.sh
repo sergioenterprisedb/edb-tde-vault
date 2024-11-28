@@ -47,7 +47,9 @@ printf ". /vagrant_scripts/vault_install.sh\n"
 printf "sudo su - enterprisedb\n"
 printf "cd /vagrant_scripts\n"
 printf "\n"
-
+if [ "$vault_engine" == "kmip" ]; then
+  printf "./install_secret.sh\n"
+fi
 printf "./install_epas_cluster.sh\n"
 printf "./test_tde.sh\n"
 printf "\n${N}"

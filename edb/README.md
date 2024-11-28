@@ -5,7 +5,7 @@ This demo will demostrate how to deploy EDB Postgres Advanced Server (EPAS) usin
 - To have an EDB account
 - VirtualBox
 - Vagrant
-- HashiCorp Vault
+- HashiCorp Vault or HashiCorp Vault Enterprise
 
 # Final architecture
 You will have to VM's:
@@ -40,12 +40,22 @@ cat ./edb/.edbtoken
 ```
 Once you have the token configured, you can install PostgreSQL, EPAS and test TDE.
 # Configure HashiCorp Vault
-By default, TDE will use HashiCorp Vault to store keys. There are 2 variables: 
+By default, TDE will use HashiCorp Vault or HashiCorp Vault Enterprise to store keys. There are 2 variables used by TDE: 
 <code>PGDATAKEYWRAPCMD</code> and <code>PGDATAKEYUNWRAPCMD</code> in file [config.sh](./config/config.sh)
 ```
-# TDE Vault config sample
+# TDE Vault config samples
 export PGDATAKEYWRAPCMD='base64 | vault write -field=ciphertext transit/encrypt/pg-tde-master-1 plaintext=- > %p'
 export PGDATAKEYUNWRAPCMD='vault write -field=plaintext transit/decrypt/pg-tde-master-1 ciphertext=- < %p | base64 -d'
+
+or
+export PGDATAKEYWRAPCMD='python3 ${kmip_path}/edb_tde_kmip_client.py encrypt --pykmip-config-file=${kmip_path}/pykmip.conf --key-uid=${secret} --out-file=%p --variant=pykmip'
+export PGDATAKEYUNWRAPCMD='python3 ${kmip_path}/edb_tde_kmip_client.py decrypt --pykmip-config-file=${kmip_path}/pykmip.conf --key-uid=${secret} --in-file=%p --variant=pykmip'
+
+or
+
+export PGDATAKEYWRAPCMD='openssl enc -e -aes256 -pass pass:ok -out %p'
+export PGDATAKEYUNWRAPCMD='openssl enc -d -aes256 -pass pass:ok -in %p'
+
 ```
 # Install PostgreSQL
 First of all, install PostgreSQL:

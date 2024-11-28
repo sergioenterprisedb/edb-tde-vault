@@ -43,6 +43,7 @@ Vagrant.configure("2") do |config|
     epas.vm.provision "shell", inline: <<-SHELL
       sudo sh /vagrant_scripts/firewall.sh
       sudo sh /vagrant_scripts/bat_install.sh
+      #sudo sh /vagrant_scripts/install_PyKMIP.sh
       sudo sh /vagrant_scripts/install_epas.sh
       #sudo su - enterprisedb -c "/vagrant_scripts/install_tde.sh"
       #sudo su - enterprisedb -c "/vagrant_scripts/test_tde.sh"

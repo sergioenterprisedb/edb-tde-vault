@@ -3,8 +3,8 @@
 . /vagrant_config/config.sh
 
 cd /tmp
-curl -O https://releases.hashicorp.com/vault/${VAULT_VERSION}/vault_${VAULT_VERSION}_linux_amd64.zip
-unzip vault_${VAULT_VERSION}_linux_amd64.zip
+curl -O https://releases.hashicorp.com/vault/${VAULT_VERSION}${VAULT_ENTERPRISE}/vault_${VAULT_VERSION}${VAULT_ENTERPRISE}_linux_amd64.zip
+unzip vault_${VAULT_VERSION}${VAULT_ENTERPRISE}_linux_amd64.zip
 sudo mv vault /usr/bin/
 
 cat >> /home/vagrant/.bash_profile <<EOF
