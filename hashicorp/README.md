@@ -5,6 +5,9 @@ If you are using HashiCorp Vault Enterprise, add the file vault.hclic in this di
 ```
 cd hashicorp
 vagrant up
+
+./copy_certificates.sh
+
 ```
 A VM will be deployed with Vault 1.18.1. You can easyly change in this [config.sh](./config/config.sh) file.
 # HashiCorp Vault console
